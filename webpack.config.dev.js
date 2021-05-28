@@ -2,13 +2,10 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin'); //optimizar css
-const TerserPlugin = require('terser-webpack-plugin'); //optimizar js
 const Dotenv = require('dotenv-webpack');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const { triggerAsyncId } = require('async_hooks');
 
 module.exports = {
-    mode: 'production', // LE INDICO EL MODO EXPLICITAMENTE
     entry: './src/index.js', // el punto de entrada de mi aplicación
     output: { // Esta es la salida de mi bundle
         path: path.resolve(__dirname, 'dist'),
@@ -16,9 +13,11 @@ module.exports = {
         // para no tener conflictos entre Linux, Windows, etc
         // main.js se cambia el nombre para saber el hash del build
         filename: '[name].[contenthash].js', 
-        assetModuleFilename: 'assets/images/[hash][ext][query]'
+        assetModuleFilename: 'assets/images/[hash][ext][query]',
         // EL NOMBRE DEL ARCHIVO FINAL,
     },
+    mode: 'development',
+    watch: true, // modo watch en dev
     resolve: {
         extensions: ['.js'], // LOS ARCHIVOS QUE WEBPACK VA A LEER
         alias: {
@@ -95,14 +94,5 @@ module.exports = {
             ]
         }),
         new Dotenv(),
-        new CleanWebpackPlugin(),
     ],
-    //soporte de optimizacion css y js respectivamente
-    optimization:{
-        minimize: true,
-        minimizer: [
-            new CssMinimizerPlugin(),
-            new TerserPlugin(),
-        ]
-    }
 }
